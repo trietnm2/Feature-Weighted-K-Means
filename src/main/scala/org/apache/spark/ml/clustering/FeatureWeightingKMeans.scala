@@ -2,8 +2,8 @@ package org.apache.spark.ml.clustering
 
 import org.apache.spark.SparkException
 import org.apache.spark.ml.evaluation.ClusteringEvaluator
-import org.apache.spark.sql.{DataFrame, Dataset}
 import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.{DataFrame, Dataset}
 
 trait FeatureWeightingKMeansModel extends KMeansParams {
   protected var trainingSummary: Option[KMeansSummary] = None
@@ -25,14 +25,14 @@ trait FeatureWeightingKMeansModel extends KMeansParams {
   def setSeed(value: Long): this.type = set(seed, value)
 
   /**
-    * Return true if there exists summary of model.
-    */
+   * Return true if there exists summary of model.
+   */
   def hasSummary: Boolean = trainingSummary.nonEmpty
 
   /**
-    * Gets summary of model on training set. An exception is
-    * thrown if `trainingSummary == None`.
-    */
+   * Gets summary of model on training set. An exception is
+   * thrown if `trainingSummary == None`.
+   */
   def summary: KMeansSummary = trainingSummary.getOrElse {
     throw new SparkException(s"No training summary available for the ${this.getClass.getSimpleName}")
   }

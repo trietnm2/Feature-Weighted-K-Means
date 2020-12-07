@@ -3,7 +3,6 @@ package org.apache.spark.mllib.clustering
 import org.apache.hadoop.fs.Path
 import org.apache.spark.SparkContext
 import org.apache.spark.internal.Logging
-import org.apache.spark.ml.clustering.{EntropyWeightingKMeans => NewEntropyWeightingKMeans}
 import org.apache.spark.ml.util.Instrumentation
 import org.apache.spark.mllib.linalg.BLAS.{axpy, copy}
 import org.apache.spark.mllib.linalg.{Vector, Vectors}

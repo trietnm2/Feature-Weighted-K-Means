@@ -3,7 +3,6 @@ package org.apache.spark.mllib.clustering
 import org.apache.hadoop.fs.Path
 import org.apache.spark.SparkContext
 import org.apache.spark.internal.Logging
-import org.apache.spark.ml.clustering.{SelfAdjustmentKMeans => NewSelfAdjustmentKMeans}
 import org.apache.spark.ml.util.Instrumentation
 import org.apache.spark.mllib.linalg.BLAS.{axpy, copy, scal}
 import org.apache.spark.mllib.linalg.{Vector, Vectors}
@@ -17,7 +16,6 @@ import org.json4s.jackson.JsonMethods.{compact, render}
 import org.json4s.{DefaultFormats, _}
 
 import scala.collection.JavaConverters._
-import scala.math.{pow => mPow}
 
 /**
  * Triet Nguyen

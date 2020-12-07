@@ -6,16 +6,16 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.util.random.XORShiftRandom
 
 /**
-  * Triet Nguyen
-  * Feature Weighting K-Means
-  */
-abstract class FeatureWeightingKMeans(protected var k:                   Int,
-                                      protected var maxIterations:       Int,
-                                      protected var initializationMode:  String,
+ * Triet Nguyen
+ * Feature Weighting K-Means
+ */
+abstract class FeatureWeightingKMeans(protected var k: Int,
+                                      protected var maxIterations: Int,
+                                      protected var initializationMode: String,
                                       protected var initializationSteps: Int,
-                                      protected var epsilon:             Double,
-                                      protected var seed:                Long)
-    extends KMeans {
+                                      protected var epsilon: Double,
+                                      protected var seed: Long)
+  extends KMeans {
   protected var initialModel: Option[FeatureWeightingKMeansModel] = None
 
   def fit(data: RDD[Vector]): FeatureWeightingKMeansModel = ???
@@ -32,15 +32,15 @@ abstract class FeatureWeightingKMeans(protected var k:                   Int,
           initKMeansParallel(data, distanceMeasureInstance)
         }
     }
-    val dims    = centers.head.vector.size
+    val dims = centers.head.vector.size
     val weights = Array.fill(centers.length)(new VectorWithNorm(Vectors.dense((0 until dims).map(_ => (1.0 / dims)).toArray)))
 
     (centers, weights)
   }
 
   /**
-    * Initialize a set of cluster centers at random.
-    */
+   * Initialize a set of cluster centers at random.
+   */
   def initRandom(data: RDD[VectorWithNorm]): Array[VectorWithNorm] = {
     // Select without replacement; may still produce duplicates if the data has < k distinct
     // points, so deduplicate the centroids to match the behavior of k-means|| in the same situation
@@ -52,23 +52,23 @@ abstract class FeatureWeightingKMeans(protected var k:                   Int,
   }
 
   /**
-    * Fixes C and W to minimises Objective Function in respect to S
-    *
-    * @param data
-    * @param centers
-    * @param weights
-    * @return
-    */
-  protected def getClusters(data:    RDD[VectorWithNorm],
+   * Fixes C and W to minimises Objective Function in respect to S
+   *
+   * @param data
+   * @param centers
+   * @param weights
+   * @return
+   */
+  protected def getClusters(data: RDD[VectorWithNorm],
                             centers: Array[VectorWithNorm],
                             weights: Array[VectorWithNorm]): RDD[(Int, VectorWithNorm, Double)] = ???
 
   /**
-    * Fixes S and W to minimises Objective Function in respect to C
-    *
-    * @param data
-    * @param centers
-    */
+   * Fixes S and W to minimises Objective Function in respect to C
+   *
+   * @param data
+   * @param centers
+   */
   protected def updateCenters(data: RDD[(Int, VectorWithNorm, Double)], centers: Array[VectorWithNorm]): Unit = {
     val dims = centers.head.vector.size
 
@@ -76,12 +76,12 @@ abstract class FeatureWeightingKMeans(protected var k:                   Int,
     // c_kv = (1/|Sk|) * SUM_i_Sk [y_iv]
     val totalContribs = data
       .mapPartitions { points =>
-        val sums   = Array.fill(centers.length)(Vectors.zeros(dims))
+        val sums = Array.fill(centers.length)(Vectors.zeros(dims))
         val counts = Array.fill(centers.length)(0L)
 
         points.foreach { point =>
           val bestCenter = point._1
-          val sum        = sums(bestCenter)
+          val sum = sums(bestCenter)
           axpy(1.0, point._2.vector, sum)
           counts(bestCenter) += 1
         }
@@ -104,26 +104,26 @@ abstract class FeatureWeightingKMeans(protected var k:                   Int,
   }
 
   /**
-    * Fixes S and C to minimises Objective Function in respect to W
-    *
-    * @param data
-    * @param centers
-    * @param weights
-    */
-  protected def updateWeights(data:    RDD[(Int, VectorWithNorm, Double)],
+   * Fixes S and C to minimises Objective Function in respect to W
+   *
+   * @param data
+   * @param centers
+   * @param weights
+   */
+  protected def updateWeights(data: RDD[(Int, VectorWithNorm, Double)],
                               centers: Array[VectorWithNorm],
                               weights: Array[VectorWithNorm]): Unit =
     ???
 
   /**
-    * The Objective Function of Feature Weighting K-Means
-    *
-    * @param data
-    * @param centers
-    * @param weights
-    * @return
-    */
-  protected def getOptimizationFunctionValue(data:    RDD[(Int, VectorWithNorm, Double)],
+   * The Objective Function of Feature Weighting K-Means
+   *
+   * @param data
+   * @param centers
+   * @param weights
+   * @return
+   */
+  protected def getOptimizationFunctionValue(data: RDD[(Int, VectorWithNorm, Double)],
                                              centers: Array[VectorWithNorm],
                                              weights: Array[VectorWithNorm]): Double = ???
 }
@@ -131,17 +131,17 @@ abstract class FeatureWeightingKMeans(protected var k:                   Int,
 object FeatureWeightingKMeans {
 
   /**
-    * Map ((A, B), C)) to (A,B,C)
-    *
-    * @param t
-    * @tparam A
-    * @tparam B
-    * @tparam C
-    * @return
-    */
+   * Map ((A, B), C)) to (A,B,C)
+   *
+   * @param t
+   * @tparam A
+   * @tparam B
+   * @tparam C
+   * @return
+   */
   def f2[A, B, C](t: ((A, B), C)) = (t._1._1, t._1._2, t._2)
 
-  def calDistance(diffVec: Vector, weight: Vector): Double ={
+  def calDistance(diffVec: Vector, weight: Vector): Double = {
     val distance: Double = diffVec.toArray
       .zip(weight.toArray)
       .map {
@@ -154,22 +154,22 @@ object FeatureWeightingKMeans {
   }
 
   /**
-    * The assignment of entity to the closest cluster Sk uses the weighted distance
-    * d(y_i, c_k) = SUM_v_V [ w_kv * (y_iv - c_kv)^2 ]
-    *
-    *
-    * @param centers
-    * @param point
-    * @param weights
-    * @return
-    */
+   * The assignment of entity to the closest cluster Sk uses the weighted distance
+   * d(y_i, c_k) = SUM_v_V [ w_kv * (y_iv - c_kv)^2 ]
+   *
+   *
+   * @param centers
+   * @param point
+   * @param weights
+   * @return
+   */
   def findClosest(centers: TraversableOnce[VectorWithNorm],
-                  point:   VectorWithNorm,
+                  point: VectorWithNorm,
                   weights: TraversableOnce[VectorWithNorm]): (Int, Double) = {
 
     var bestDistance = Double.PositiveInfinity
-    var bestIndex    = 0
-    var i            = 0
+    var bestIndex = 0
+    var i = 0
 
     val centers_weights = centers.toArray.zip(weights.toIterable)
     centers_weights.foreach { cw =>
@@ -178,10 +178,10 @@ object FeatureWeightingKMeans {
       axpy(-1.0, cw._1.vector, diffVec)
 
       // Calculate d(y_i, c_k) = SUM_v_V [w_kv * (y_iv - c_kv)^2]
-      val distance: Double =  calDistance(diffVec, cw._2.vector)
+      val distance: Double = calDistance(diffVec, cw._2.vector)
       if (distance < bestDistance) {
         bestDistance = distance
-        bestIndex    = i
+        bestIndex = i
       }
       i += 1
     }
@@ -189,12 +189,12 @@ object FeatureWeightingKMeans {
   }
 
   def calSilhouetteCoefficient(centers: TraversableOnce[VectorWithNorm],
-                               point:   VectorWithNorm,
+                               point: VectorWithNorm,
                                weights: TraversableOnce[VectorWithNorm]
                               ): Double = {
 
-    var outerDissimilarity:Double = Double.PositiveInfinity
-    var innerDissimilarity:Double = Double.PositiveInfinity
+    var outerDissimilarity: Double = Double.PositiveInfinity
+    var innerDissimilarity: Double = Double.PositiveInfinity
 
     val centers_weights = centers.toArray.zip(weights.toIterable)
     centers_weights.foreach { cw =>
@@ -203,7 +203,7 @@ object FeatureWeightingKMeans {
       axpy(-1.0, cw._1.vector, diffVec)
 
       // Calculate d(y_i, c_k) = SUM_v_V [w_kv * (y_iv - c_kv)^2]
-      val distance: Double =  calDistance(diffVec, cw._2.vector)
+      val distance: Double = calDistance(diffVec, cw._2.vector)
       if (distance < innerDissimilarity) {
         outerDissimilarity = innerDissimilarity
         innerDissimilarity = distance
@@ -221,7 +221,7 @@ object FeatureWeightingKMeans {
 }
 
 abstract class FeatureWeightingKMeansModel(clusterCenters: Array[Vector], val clusterWeights: Array[Vector])
-    extends KMeansModel(clusterCenters) {
+  extends KMeansModel(clusterCenters) {
 
   protected def clusterCentersWithNorm: Iterable[VectorWithNorm] =
     clusterCenters.map(new VectorWithNorm(_))

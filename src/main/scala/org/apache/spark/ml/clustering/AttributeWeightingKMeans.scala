@@ -1,8 +1,9 @@
 package org.apache.spark.ml.clustering
 
 import org.apache.hadoop.fs.Path
-import org.apache.spark.ml.linalg.{Vector, VectorUDT, Vectors}
+import org.apache.spark.ml.linalg.{Vector, VectorUDT}
 import org.apache.spark.ml.param.{DoubleParam, ParamMap, ParamValidators}
+import org.apache.spark.ml.util.Instrumentation.instrumented
 import org.apache.spark.ml.util._
 import org.apache.spark.ml.{Estimator, Model}
 import org.apache.spark.mllib.clustering.{AttributeWeightingKMeans => MLlibAttributeWeightingKMeans, AttributeWeightingKMeansModel => MLlibAttributeWeightingKMeansModel, KMeans => MLlibKMeans}
@@ -10,13 +11,10 @@ import org.apache.spark.mllib.linalg.VectorImplicits._
 import org.apache.spark.mllib.linalg.{Vector => OldVector, Vectors => OldVectors}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.functions.{col, udf}
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.spark.sql.{DataFrame, Dataset, Row}
 import org.apache.spark.util.Utils
 import org.apache.spark.util.VersionUtils.majorVersion
 import org.json4s.jackson.JsonMethods._
-import org.apache.spark.ml.util.Instrumentation.instrumented
-import org.apache.spark.storage.StorageLevel
-import org.apache.spark.sql.functions._
 
 private[clustering] trait AttributeWeightingKMeansParams extends FeatureWeightingKMeansModel {
   final val beta = new DoubleParam(

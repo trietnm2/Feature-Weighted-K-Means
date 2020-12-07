@@ -3,7 +3,6 @@ package org.apache.spark.mllib.clustering
 import org.apache.hadoop.fs.Path
 import org.apache.spark.SparkContext
 import org.apache.spark.internal.Logging
-import org.apache.spark.ml.clustering.{WeightedKMeans => NewWeightedKMeans}
 import org.apache.spark.ml.util.Instrumentation
 import org.apache.spark.mllib.linalg.BLAS.{axpy, copy}
 import org.apache.spark.mllib.linalg.{Vector, Vectors}
@@ -359,8 +358,8 @@ object WeightedKMeans {
 
   def computeSilhouette(centers: TraversableOnce[VectorWithNorm], point: VectorWithNorm, weights: VectorWithNorm): Double = {
 
-    var outerDissimilarity:Double = Double.PositiveInfinity
-    var innerDissimilarity:Double = Double.PositiveInfinity
+    var outerDissimilarity: Double = Double.PositiveInfinity
+    var innerDissimilarity: Double = Double.PositiveInfinity
 
     centers.foreach { c =>
       val diffVec: Vector = Vectors.zeros(point.vector.size)

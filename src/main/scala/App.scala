@@ -1,12 +1,12 @@
 
+import java.util.logging.{Level, Logger}
+
 import org.apache.spark.ml.clustering._
 import org.apache.spark.ml.feature.VectorAssembler
 import org.apache.spark.ml.linalg.Vector
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{DoubleType, StringType, StructField, StructType}
-
-import java.util.logging.{Level, Logger}
 
 object App {
   Logger.getLogger("org").setLevel(Level.OFF)
