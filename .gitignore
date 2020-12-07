@@ -1,6 +1,7 @@
 /target/
 /model/
 /data/
-/project/
 /.bsp/
 /.idea/
+/project/project/
+/project/target/
